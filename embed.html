@@ -14,15 +14,21 @@
 <canvas id="rive" aria-label="Interactive 3D Methadone bottle and Buprenorphine carton"></canvas>
 <script src="https://cdn.jsdelivr.net/npm/@rive-app/webgl2@2.49.1/rive.js"></script>
 <script>
-  const r = new rive.Rive({
-    src: 'meds3d.riv',
-    canvas: document.getElementById('rive'),
-    autoplay: true,
-    enableGPUCanvas: true,   // the 3D is drawn with Rive's GPU scripting
-    layout: new rive.Layout({ fit: rive.Fit.Cover }),
-    onLoad: () => r.resizeDrawingSurfaceToCanvas(),
-  });
-  window.addEventListener('resize', () => r.resizeDrawingSurfaceToCanvas());
+  // check for the latest file on every load, so a refresh right after an update never shows a
+  // stale copy; the server only sends it again when it has changed
+  fetch('meds3d.riv', { cache: 'no-cache' })
+    .then((res) => res.arrayBuffer())
+    .then((buffer) => {
+      const r = new rive.Rive({
+        buffer,
+        canvas: document.getElementById('rive'),
+        autoplay: true,
+        enableGPUCanvas: true,   // the 3D is drawn with Rive's GPU scripting
+        layout: new rive.Layout({ fit: rive.Fit.Cover }),
+        onLoad: () => r.resizeDrawingSurfaceToCanvas(),
+      });
+      window.addEventListener('resize', () => r.resizeDrawingSurfaceToCanvas());
+    });
 </script>
 </body>
 </html>

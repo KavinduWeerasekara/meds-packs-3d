@@ -64,20 +64,26 @@
 <script>
   const status = document.getElementById('status');
   const fail = (msg) => { status.textContent = msg; status.dataset.state = 'error'; };
-  try {
-    const r = new rive.Rive({
-      src: 'meds3d.riv',
-      canvas: document.getElementById('rive'),
-      autoplay: true,
-      enableGPUCanvas: true,   // the 3D is drawn with Rive's GPU scripting
-      layout: new rive.Layout({ fit: rive.Fit.Contain }),
-      onLoad: () => r.resizeDrawingSurfaceToCanvas(),
-      onLoadError: () => fail('The animation could not load. Try a recent Chrome, Edge or Safari.'),
-    });
-    window.addEventListener('resize', () => r.resizeDrawingSurfaceToCanvas());
-  } catch (e) {
-    fail('The animation could not start in this browser.');
-  }
+  // check for the latest file on every load, so a refresh right after an update never shows a
+  // stale copy; the server only sends it again when it has changed
+  fetch('meds3d.riv', { cache: 'no-cache' })
+    .then((res) => {
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.arrayBuffer();
+    })
+    .then((buffer) => {
+      const r = new rive.Rive({
+        buffer,
+        canvas: document.getElementById('rive'),
+        autoplay: true,
+        enableGPUCanvas: true,   // the 3D is drawn with Rive's GPU scripting
+        layout: new rive.Layout({ fit: rive.Fit.Contain }),
+        onLoad: () => r.resizeDrawingSurfaceToCanvas(),
+        onLoadError: () => fail('The animation could not load. Try a recent Chrome, Edge or Safari.'),
+      });
+      window.addEventListener('resize', () => r.resizeDrawingSurfaceToCanvas());
+    })
+    .catch(() => fail('The animation could not start in this browser.'));
 </script>
 </body>
 </html>
