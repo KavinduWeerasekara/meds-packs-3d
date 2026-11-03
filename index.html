@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Medication Packs 3D</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&display=swap">
+<style>
+  /* layout: one 16:9 stage centred on a deep teal-black ground, a quiet caption underneath */
+  :root {
+    --ground: #0b1418;
+    --stage: #0e5670;
+    --ink: #dfe9ec;
+    --muted: #86a2ab;
+    --line: #1e3038;
+    --font: "Barlow", "Segoe UI", system-ui, sans-serif;
+    color-scheme: dark;
+  }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font: 14px var(--font);
+    display: grid;
+    place-items: center;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 24px;
+    box-sizing: border-box;
+  }
+  main { width: min(100%, 1280px); display: grid; gap: 14px; }
+  .stage {
+    width: 100%;
+    max-width: 100%;
+    aspect-ratio: 16 / 9;
+    background: var(--stage);
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 0 0 1px var(--line), 0 24px 60px rgba(0, 0, 0, 0.45);
+  }
+  canvas { width: 100%; height: 100%; display: block; touch-action: none; }
+  .caption {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 6px 24px;
+    color: var(--muted);
+  }
+  .caption strong { color: var(--ink); font-weight: 600; letter-spacing: 0.02em; }
+  .status[data-state="error"] { color: #f0a8a8; }
+</style>
+</head>
+<body>
+<main>
+  <div class="stage"><canvas id="rive" aria-label="Interactive 3D Methadone bottle and Buprenorphine carton"></canvas></div>
+  <div class="caption">
+    <span><strong>Methadone &amp; Buprenorphine</strong> &middot; interactive thumbnail</span>
+    <span class="status" id="status">Move your pointer over a pack.</span>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@rive-app/webgl2@2.49.1/rive.js"></script>
+<script>
+  const status = document.getElementById('status');
+  const fail = (msg) => { status.textContent = msg; status.dataset.state = 'error'; };
+  try {
+    const r = new rive.Rive({
+      src: 'meds3d.riv',
+      canvas: document.getElementById('rive'),
+      autoplay: true,
+      enableGPUCanvas: true,   // the 3D is drawn with Rive's GPU scripting
+      layout: new rive.Layout({ fit: rive.Fit.Contain }),
+      onLoad: () => r.resizeDrawingSurfaceToCanvas(),
+      onLoadError: () => fail('The animation could not load. Try a recent Chrome, Edge or Safari.'),
+    });
+    window.addEventListener('resize', () => r.resizeDrawingSurfaceToCanvas());
+  } catch (e) {
+    fail('The animation could not start in this browser.');
+  }
+</script>
+</body>
+</html>
