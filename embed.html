@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Medication Packs 3D</title>
+<style>
+  /* the bare scene, filling whatever frame it is embedded in */
+  html, body { margin: 0; height: 100%; background: #0e5670; overflow: hidden; }
+  canvas { width: 100%; height: 100%; display: block; touch-action: none; }
+</style>
+</head>
+<body>
+<canvas id="rive" aria-label="Interactive 3D Methadone bottle and Buprenorphine carton"></canvas>
+<script src="https://cdn.jsdelivr.net/npm/@rive-app/webgl2@2.49.1/rive.js"></script>
+<script>
+  const r = new rive.Rive({
+    src: 'meds3d.riv',
+    canvas: document.getElementById('rive'),
+    autoplay: true,
+    enableGPUCanvas: true,   // the 3D is drawn with Rive's GPU scripting
+    layout: new rive.Layout({ fit: rive.Fit.Cover }),
+    onLoad: () => r.resizeDrawingSurfaceToCanvas(),
+  });
+  window.addEventListener('resize', () => r.resizeDrawingSurfaceToCanvas());
+</script>
+</body>
+</html>
