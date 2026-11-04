@@ -24,7 +24,7 @@
         canvas: document.getElementById('rive'),
         autoplay: true,
         enableGPUCanvas: true,   // the 3D is drawn with Rive's GPU scripting
-        layout: new rive.Layout({ fit: rive.Fit.Cover }),
+        layout: new rive.Layout({ fit: rive.Fit.Layout }),   // the scene re-lays itself out to the box
         onLoad: () => r.resizeDrawingSurfaceToCanvas(),
       });
       window.addEventListener('resize', () => r.resizeDrawingSurfaceToCanvas());
